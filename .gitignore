@@ -1,0 +1,6 @@
+*.gz
+*.zip
+*.csv
+**/__pycache__
+**/token.env
+**/dev.env
