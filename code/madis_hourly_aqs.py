@@ -382,19 +382,16 @@ if __name__=="__main__":
     if (ST_TIME is None) & (EN_TIME is None):
         # If no specified input, check database for most recent data and backfill up until last completed hour (up to lookback_limit)
         latest_hour = get_latest_hour(now) + pd.Timedelta(hours=UTC_OFFSET)
+        target_hour = latest_hour + pd.Timedelta(hours=1) 
         lookback_limit = now - pd.Timedelta(days=LOOKBACK_DAYS) + pd.Timedelta(hours=UTC_OFFSET)
-        fetch_time = max(latest_hour,lookback_limit)
+        fetch_time = max(target_hour,lookback_limit)
         print("No specified input timestamps. Processing recent data from :",fetch_time)
-        if fetch_time < recent_hour:
+        if fetch_time <= recent_hour:
             # Check if fetch_time from database query is farther back than the last completed hour.
             # Set batch specs to run fetch for each hour from fetch_time through recent_hour
             batch_st = fetch_time
             batch_en = recent_hour
             batch_mode = True
-        elif fetch_time > recent_hour:
-            # Somehow the database fetch_time is in the future?
-            print("Error: database returned future timestamp. Check database.")
-            quit()    
         else:
             # fetch_time == recent_hour
             print("Database is up to date. Specify hour input manually to force re-fetch.")
@@ -403,11 +400,15 @@ if __name__=="__main__":
         # If one of them is None but not the other (ie. one date supplied)
         input_time = ST_TIME if ST_TIME is not None else EN_TIME
         fetch_time = pd.to_datetime(input_time) # convert env string to datetime
-        print("Received timestamp input. Processing for specified hour: ", fetch_time)
+        if fetch_time <= recent_hour:
+            print("Received timestamp input. Processing for specified hour: ", fetch_time)
+        else:
+            print("Invalid timestamp input. Exiting.")
+            quit()
     else:
         batch_st = pd.to_datetime(ST_TIME)
         batch_en = pd.to_datetime(EN_TIME)
-        if batch_st <= batch_en:
+        if (batch_st <= batch_en)&(batch_en <= recent_hour):
             batch_mode = True
             print(f"Received timestamp input range. Processing data from {batch_st} to {batch_en}.")
         else:
