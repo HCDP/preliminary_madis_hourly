@@ -15,7 +15,6 @@ Workflow steps:
     --At minimum acquires the previous complete hour of data
     --This code will never acquire data for the current incomplete hour
 """
-import sys
 import os
 import pytz
 import warnings
@@ -27,7 +26,7 @@ import json
 import numpy as np
 import pandas as pd
 import xarray as xr
-from datetime import datetime, timedelta
+from datetime import datetime
 from os.path import exists
 from xarray import SerializationWarning
 from util import handle_retry
