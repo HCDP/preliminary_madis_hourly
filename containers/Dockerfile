@@ -4,7 +4,7 @@ LABEL org.opencontainers.image.source="https://github.com/hcdp/preliminary_madis
 LABEL org.opencontainers.image.description="Image for the Preliminary Madis Hourly Workflow."
 
 RUN pip install --upgrade pip
-RUN pip install --no-cache-dir pytz requests numpy pandas xarray
+RUN pip install --no-cache-dir pytz requests numpy pandas xarray scipy
 
 COPY code/ /workspace/code/
 COPY envs/prod.env /workspace/envs/prod.env
